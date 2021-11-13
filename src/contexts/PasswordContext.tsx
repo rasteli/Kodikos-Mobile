@@ -10,6 +10,7 @@ import { AxiosResponse } from "axios"
 
 import { api } from "../services/api"
 import { useAuth } from "./AuthContext"
+import getEnvVars from "../../environment"
 
 type PasswordProviderProps = {
   children: ReactNode
@@ -52,7 +53,7 @@ type PasswordContextData = {
   methods: Methods
 }
 
-const socket = io("http://192.168.100.63:3333")
+const socket = io(getEnvVars().API_URL)
 const PasswordContext = createContext({} as PasswordContextData)
 
 export function usePassword() {
