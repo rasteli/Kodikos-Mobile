@@ -38,15 +38,16 @@ export const styles = StyleSheet.create({
     marginTop: 15
   },
 
-  password: {
-    marginHorizontal: 20,
-    position: "relative"
-  },
+  searchBox: {
+    flex: 1,
+    fontSize: 18,
+    width: "100%",
+    marginHorizontal: 15,
+    paddingHorizontal: 15,
 
-  checkbox: {
-    position: "absolute",
-    top: -20,
-    right: -10,
-    marginTop: 5
+    borderWidth: 2,
+    borderRadius: 15,
+    color: COLORS.BLUE_PRIMARY,
+    borderColor: COLORS.BLUE_PRIMARY
   }
 })

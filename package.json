@@ -5,7 +5,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "deploy": "git add . && git commit -m \":rocket:\" && git push",
+    "build-android": "expo build:android --release-channel production"
   },
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.2.0",

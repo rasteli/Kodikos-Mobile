@@ -1,38 +1,29 @@
 import React, { useState } from "react"
-import Checkbox from "react-native-bouncy-checkbox"
 import {
   Text,
   View,
-  ScrollView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  TextInput
 } from "react-native"
 
 import { styles } from "./styles"
+import { COLORS } from "../../theme"
 import { useAuth } from "../../contexts/AuthContext"
 import { Modal } from "../../components/AddPasswordModal"
-import { CustomInput } from "../../components/CustomInput"
 import { ActionButton } from "../../components/ActionButton"
 import { usePassword } from "../../contexts/PasswordContext"
 
-import { COLORS } from "../../theme"
 import Astronaut from "../../assets/astronaut.svg"
-import { copyToClipboard } from "../../utils/copy-to-clipboard"
+import { PasswordsScrollView } from "../../components/PasswordsScrollView"
 
 export function Profile() {
   const { user } = useAuth()
 
   const {
-    userPasswords,
-    methods: {
-      deletePassword,
-      setPasswordsToDelete,
-      setPasswords,
-      updatePassword
-    }
+    methods: { deletePassword, setPasswords, setPasswordLabel }
   } = usePassword()
 
-  const [label, setLabel] = useState("")
   const [deleteMode, setDeleteMode] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
 
@@ -74,45 +65,17 @@ export function Profile() {
             icon="close"
             onPress={handleSecondButtonClick}
           />
+
+          <TextInput
+            style={styles.searchBox}
+            placeholder="Buscar por rótulo"
+            placeholderTextColor={COLORS.BLUE_PRIMARY}
+            onChangeText={text => setPasswordLabel(text)}
+          />
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
-        {userPasswords?.map((password, index) => (
-          <View
-            key={password.id}
-            style={[styles.password, { marginBottom: deleteMode ? 50 : 20 }]}
-          >
-            <CustomInput
-              backgroundColor={COLORS.BLACK}
-              size={24}
-              label="RÓTULO"
-              icon="save"
-              value={password.label}
-              onChangeText={text => setLabel(text)}
-              onPress={() => updatePassword(label, password.id)}
-            />
-            <CustomInput
-              backgroundColor={COLORS.BLACK}
-              size={24}
-              label="SENHA"
-              icon="copy1"
-              editable={false}
-              value={password.value}
-              onPress={() => copyToClipboard(password.value)}
-            />
-
-            {deleteMode && (
-              <Checkbox
-                style={styles.checkbox}
-                fillColor={COLORS.BLUE_PRIMARY}
-                onPress={checked => setPasswordsToDelete(index, checked)}
-              />
-            )}
-          </View>
-        ))}
-      </ScrollView>
-
+      <PasswordsScrollView deleteMode={deleteMode} />
       <Astronaut style={styles.astronautSvg} />
 
       <Modal

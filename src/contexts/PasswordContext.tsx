@@ -42,6 +42,8 @@ type Methods = {
   updatePassword: (label: string, passwordId: string) => Promise<void>
 
   setPwdLength: React.Dispatch<React.SetStateAction<number>>
+  setPasswordLabel: React.Dispatch<React.SetStateAction<string>>
+
   setPasswordProps: (switchPwdProp: SwitchPasswordProp) => void
   setPasswordsToDelete: (index: number, checked: boolean) => void
   setPasswords: React.Dispatch<React.SetStateAction<[] | Password[]>>
@@ -49,7 +51,7 @@ type Methods = {
 
 type PasswordContextData = {
   password: Password | null
-  userPasswords: Password[] | null
+  userPasswords: Password[]
   methods: Methods
 }
 
@@ -71,6 +73,8 @@ export function PasswordProvider({ children }: PasswordProviderProps) {
   }
 
   const [pwdLength, setPwdLength] = useState(8)
+  const [passwordLabel, setPasswordLabel] = useState("")
+
   const [password, setPassword] = useState<Password | null>(null)
   const [pwdProps, setPwdProps] = useState<PasswordProp>(initialPwdPropsValue)
 
@@ -88,7 +92,19 @@ export function PasswordProvider({ children }: PasswordProviderProps) {
     async function setUserPassword() {
       try {
         const { data } = await api.get("/pwd")
-        setUserPasswords(data.passwords as Password[])
+        const passwords: Password[] = data.passwords
+
+        setUserPasswords(() => {
+          if (!passwordLabel) return passwords
+
+          const labeledPasswords = passwords.filter(password => {
+            const labelToLowercase = password.label?.toLowerCase()
+
+            return labelToLowercase?.startsWith(passwordLabel.toLowerCase())
+          })
+
+          return labeledPasswords
+        })
       } catch (error: any) {
         console.log(error.response.data.error)
       }
@@ -97,7 +113,7 @@ export function PasswordProvider({ children }: PasswordProviderProps) {
     if (user) setUserPassword()
 
     socket.on("altered_database", setUserPassword)
-  }, [password, user])
+  }, [password, user, passwordLabel])
 
   function setPasswordProps(switchPwdProp: SwitchPasswordProp) {
     const prop = translatedProps[switchPwdProp.label]
@@ -151,7 +167,8 @@ export function PasswordProvider({ children }: PasswordProviderProps) {
 
   async function updatePassword(label: string, passwordId: string) {
     try {
-      await api.put("/pwd/", { label, pwd_id: passwordId })
+      if (label.length > 0)
+        await api.put("/pwd/", { label, pwd_id: passwordId })
     } catch (error) {
       console.log(error)
     }
@@ -168,6 +185,7 @@ export function PasswordProvider({ children }: PasswordProviderProps) {
       updatePassword,
       generatePassword,
       setPasswordProps,
+      setPasswordLabel,
       setPasswordsToDelete,
       setPasswords: setPwdsToDelete
     }
