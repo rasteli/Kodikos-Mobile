@@ -27,8 +27,17 @@ export function Login() {
           backgroundColor={COLORS.BLUE_TERTIARY}
           color={COLORS.GRAY_SECONDARY}
           icon="github"
-          disabled={isLogginIn}
-          onPress={signIn}
+          isLoading={isLogginIn}
+          onPress={() => signIn("github")}
+        />
+
+        <Button
+          title="ENTRAR COM GOOGLE"
+          backgroundColor={COLORS.BLUE_TERTIARY}
+          color={COLORS.GRAY_SECONDARY}
+          icon="google"
+          isLoading={isLogginIn}
+          onPress={() => signIn("google")}
         />
       </View>
     </View>

@@ -6,9 +6,10 @@ import React, {
   useState
 } from "react"
 
-import getEnvVars from "../../environment"
 import * as AuthSession from "expo-auth-session"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+
+import getEnvVars from "../../environment"
 
 import { api } from "../services/api"
 
@@ -37,12 +38,14 @@ type AuthenticationResponse = {
 type AuthContextData = {
   user: User | null
   isLogginIn: boolean
-  signIn: () => Promise<void>
   logOut: () => Promise<void>
+  signIn: (provider: "google" | "github") => Promise<void>
 }
 
-const SCOPE = "read:user"
-const CLIENT_ID = getEnvVars().GITHUB_CLIENT_ID
+const GITHUB_SCOPE = "read:user"
+const GOOGLE_SCOPE = "https%3A//www.googleapis.com/auth/userinfo.profile"
+
+const { GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID } = getEnvVars()
 
 const USER_STORAGE = "@kodikos:user"
 const TOKEN_STORAGE = "@kodikos:token"
@@ -76,11 +79,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loadUser()
   }, [])
 
-  async function signIn() {
+  async function signIn(provider: "google" | "github") {
     try {
       setIsLogginIn(true)
 
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`
+      const urls = {
+        github: `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=${GITHUB_SCOPE}`,
+        google: `https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=${GOOGLE_SCOPE}&response_type=code&client_id=${GOOGLE_CLIENT_ID}&redirect_uri=https%3A//auth.expo.io/@rasteli/kodikos`
+      }
+
+      const authUrl = urls[provider]
 
       const { type, params } = (await AuthSession.startAsync({
         authUrl
@@ -89,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (type === "success" && params.error !== "access_denied") {
         const response = await api.post("/auth", {
           code: params.code,
-          provider: "github"
+          provider
         })
 
         const { user, token } = response.data as AuthenticationResponse
