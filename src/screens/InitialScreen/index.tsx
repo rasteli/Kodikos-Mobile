@@ -2,7 +2,6 @@ import React from "react"
 
 import { Login } from "../Login"
 import { Dashboard } from "../Dashboard"
-import { Profile } from "../Profile"
 import { useAuth } from "../../contexts/AuthContext"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 

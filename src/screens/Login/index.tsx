@@ -11,7 +11,7 @@ import OuterSpace from "../../assets/outer_space.svg"
 import { useAuth } from "../../contexts/AuthContext"
 
 export function Login() {
-  const { signIn, isLogginIn } = useAuth()
+  const { signIn, isLoginIn } = useAuth()
 
   return (
     <View style={styles.container}>
@@ -27,7 +27,7 @@ export function Login() {
           backgroundColor={COLORS.BLUE_TERTIARY}
           color={COLORS.GRAY_SECONDARY}
           icon="github"
-          isLoading={isLogginIn}
+          isLoading={isLoginIn}
           onPress={() => signIn("github")}
         />
 
@@ -36,7 +36,7 @@ export function Login() {
           backgroundColor={COLORS.BLUE_TERTIARY}
           color={COLORS.GRAY_SECONDARY}
           icon="google"
-          isLoading={isLogginIn}
+          isLoading={isLoginIn}
           onPress={() => signIn("google")}
         />
       </View>

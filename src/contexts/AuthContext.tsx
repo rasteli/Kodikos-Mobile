@@ -37,7 +37,7 @@ type AuthenticationResponse = {
 
 type AuthContextData = {
   user: User | null
-  isLogginIn: boolean
+  isLoginIn: boolean
   logOut: () => Promise<void>
   signIn: (provider: "google" | "github") => Promise<void>
 }
@@ -58,11 +58,11 @@ export function useAuth() {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
-  const [isLogginIn, setIsLogginIn] = useState(false)
+  const [isLoginIn, setIsLoginIn] = useState(false)
 
   useEffect(() => {
     async function loadUser() {
-      setIsLogginIn(true)
+      setIsLoginIn(true)
 
       const user = await AsyncStorage.getItem(USER_STORAGE)
       const token = await AsyncStorage.getItem(TOKEN_STORAGE)
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(JSON.parse(user))
       }
 
-      setIsLogginIn(false)
+      setIsLoginIn(false)
     }
 
     loadUser()
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn(provider: "google" | "github") {
     try {
-      setIsLogginIn(true)
+      setIsLoginIn(true)
 
       const urls = {
         github: `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=${GITHUB_SCOPE}`,
@@ -112,7 +112,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.log(error)
     } finally {
-      setIsLogginIn(false)
+      setIsLoginIn(false)
     }
   }
 
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     signIn,
     logOut,
-    isLogginIn
+    isLoginIn
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
